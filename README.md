@@ -17,14 +17,10 @@ package main
 
 import (
 	"fmt"
-	"gomdirectapi"
+	"github.com/alex21289/gomdirectapi"
 	"log"
 	"os"
 
-<<<<<<< HEAD
-=======
-	"github.com/alex21289/gomdirectapi/auth"
->>>>>>> fc98793a9e8ccbe11eeddbf33b534d6c2f46ac84
 	"github.com/joho/godotenv"
 )
 
