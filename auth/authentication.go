@@ -97,7 +97,6 @@ func (c *Client) Auth() (auth Authentication, err error) {
 	// Convert body in byteSlice (rb = response body)
 	rb := []byte(string(body))
 
-	fmt.Println(body)
 	// Parse json response into Authentication Struct
 	jerr := json.Unmarshal(rb, &auth)
 	if jerr != nil {
@@ -112,12 +111,12 @@ func (c *Client) Auth() (auth Authentication, err error) {
 		log.Println(respErr)
 	}
 
+	fmt.Println("Auth:", auth)
+	fmt.Println("Error:", respError)
+
 	if respError.Error != "0" {
 		log.Fatal(respError.ErrorDescription)
 	}
-
-	fmt.Println("Auth:", auth)
-	fmt.Println("Error:", respError)
 
 	c.AccessToken = auth.AccessToken
 	c.RefreshToken = auth.RefreshToken
