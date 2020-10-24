@@ -1,5 +1,5 @@
 *.json
 main.go
-go.mod
+#go.mod
 go.sum
 .env
