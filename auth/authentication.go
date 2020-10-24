@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -30,6 +31,12 @@ type Client struct {
 	TokenType    string
 	RefreshToken string
 	Scope        string
+}
+
+// Error is uses to parse an error Response
+type Error struct {
+	Error            string `json:"error"`
+	ErrorDescription string `json:"error_description"`
 }
 
 // NewClient creates a new Struct of Credentials
@@ -89,6 +96,7 @@ func (c *Client) Auth() (auth Authentication, err error) {
 	// Convert body in byteSlice (rb = response body)
 	rb := []byte(string(body))
 
+	fmt.Println(body)
 	// Parse json response into Authentication Struct
 	jerr := json.Unmarshal(rb, &auth)
 	// jerr, cant use err ?!
@@ -103,5 +111,5 @@ func (c *Client) Auth() (auth Authentication, err error) {
 	c.Scope = auth.Scope
 
 	// Returns Authentication Struct
-	return auth, err
+	return auth, jerr
 }
