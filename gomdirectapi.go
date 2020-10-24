@@ -1,6 +1,6 @@
 package gomdirectapi
 
-import "gomdirectapi/auth"
+import "github.com/alex21289/gomdirectapi/auth"
 
 // NewClient creates a new Struct of Credentials
 // Expects client_scret, client_Id, username and password
