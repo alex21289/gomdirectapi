@@ -54,6 +54,7 @@ func NewClient(cID string, cS string, u string, p string) (c Client) {
 // and sets the tokens to the client struct
 // Returns the response as Authentication struct
 func (c *Client) Auth() (auth Authentication, err error) {
+	var respError Error
 	// Comdirect API URL (2020-10-24)
 	url := "https://api.comdirect.de/oauth/token"
 
@@ -99,18 +100,30 @@ func (c *Client) Auth() (auth Authentication, err error) {
 	fmt.Println(body)
 	// Parse json response into Authentication Struct
 	jerr := json.Unmarshal(rb, &auth)
-	// jerr, cant use err ?!
 	if jerr != nil {
 		log.Println("JSON could not decoded")
 		log.Println(jerr)
 	}
 
-	fmt.Println("Error:", auth)
+	// Parse json error response into Error Struct
+	respErr := json.Unmarshal(rb, &respError)
+	if respErr != nil {
+		log.Println("JSON could not decoded")
+		log.Println(respErr)
+	}
+
+	if respError.Error != "0" {
+		log.Fatal(respError.ErrorDescription)
+	}
+
+	fmt.Println("Auth:", auth)
+	fmt.Println("Error:", respError)
+
 	c.AccessToken = auth.AccessToken
 	c.RefreshToken = auth.RefreshToken
 	c.TokenType = auth.TokenType
 	c.Scope = auth.Scope
 
 	// Returns Authentication Struct
-	return auth, jerr
+	return auth, err
 }
