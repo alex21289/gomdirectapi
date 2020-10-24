@@ -20,7 +20,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/alex21289/gomdirectapi"
+	"github.com/alex21289/gomdirectapi/auth"
 	"github.com/joho/godotenv"
 )
 
