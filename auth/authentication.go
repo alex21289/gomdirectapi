@@ -105,7 +105,7 @@ func (c *Client) Auth() (auth Authentication, err error) {
 		log.Println(jerr)
 	}
 
-	fmt.Println("Error:", jerr)
+	fmt.Println("Error:", auth)
 	c.AccessToken = auth.AccessToken
 	c.RefreshToken = auth.RefreshToken
 	c.TokenType = auth.TokenType
