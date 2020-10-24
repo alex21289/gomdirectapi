@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -111,8 +112,9 @@ func (c *Client) Auth() (auth Authentication, err error) {
 	}
 
 	if (Error{} != respError) {
-		log.Println("Authentication Error")
-		log.Fatal(respError.ErrorDescription)
+		// log.Println("Authentication Error")
+		err = errors.New(respError.ErrorDescription)
+		// log.Fatal(respError.ErrorDescription)
 	}
 
 	c.AccessToken = auth.AccessToken
