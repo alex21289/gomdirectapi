@@ -17,10 +17,10 @@ package main
 
 import (
 	"fmt"
+	"gomdirectapi"
 	"log"
 	"os"
 
-	"github.com/alex21289/gomdirectapi"
 	"github.com/joho/godotenv"
 )
 
@@ -45,16 +45,16 @@ func main() {
 		log.Fatal("Missing credentials")
 	}
 
-	client := auth.NewClient(clientID, clientSecret, username, password)
+	client := gomdirectapi.NewClient(clientID, clientSecret, username, password)
 	auth, err := client.Auth()
-
 	if err != nil {
 		log.Println("Authentication went wrong")
 		log.Println(err)
 	}
 
-	// You can access the Access token from both
 	fmt.Println("Access Token from client:", client.AccessToken)
 	fmt.Println("Access Token from auth:", auth.AccessToken)
+
 }
+
 ```
