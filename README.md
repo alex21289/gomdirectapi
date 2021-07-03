@@ -9,8 +9,6 @@ The package will provide
 
 ## Example Authentication
 
-### main.go
-
 ```go
 package main
 
@@ -22,14 +20,13 @@ import (
 	"time"
 
 	"github.com/alex21289/gomdirectapi"
-	"github.com/alex21289/gomdirectapi/account"
 	"github.com/spf13/viper"
 )
 
 func main() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
-	viper.AddConfigPath("<path-to-credentials>")
+	viper.AddConfigPath("<path to credential.json>")
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal(err)
 	}
@@ -42,10 +39,9 @@ func main() {
 		AccessToken:  viper.GetString("access_token"),
 	}
 
-	// Create a new session instance
 	session := gomdirectapi.NewBuilder(creds).Build()
 
-	// Authentication flow step by step
+	// Get Session
 	if err := session.Authenticate(); err != nil {
 		log.Fatal(err)
 	}
@@ -56,37 +52,38 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Confirm session with mobile device
+
+	// Confirm the session with mobile device
 	confirmSession()
-
-	if err := session.Activate(); err != nil {
-		log.Fatal(err)
-	}
-if 	err := session.OAuth2(); err != nil {
-	log.Fatal(err)
-}
-
-// Get Client from session
-client, err := gomdirectapi.GetClient(session)
+	err = session.Activate()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-
-// Create an instance to query accounts
-	accounts, err := account.GetAccounts(client)
+	err = session.OAuth2()
+	if err != nil {
+		log.Fatal(err)
+	}
+	client, err := gomdirectapi.GetClient(session)
 	if err != nil {
 		log.Println(err)
-		os.Exit(23)
 	}
-	log.Println(accounts.Values)
 
+	accounts, err := client.GetAccounts()
+	if err != nil {
+		log.Println(err)
+	}
+
+	for _, a := range accounts.Values {
+		log.Println("============")
+		log.Println(a.AccountDetail.AccountType.Text)
+		log.Println(a.Balance.Value + " €")
+	}
 }
 
 func confirmSession() {
-	fmt.Print("Press Enter after you confirmed the Session on your Mobile Device... ")
+	fmt.Print("Press Enter after confirm the Session on your Mobile Device")
 	input := bufio.NewScanner(os.Stdin)
 	input.Scan()
+	fmt.Println(input.Text())
 }
-
 ```
