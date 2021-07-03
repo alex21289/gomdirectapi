@@ -64,7 +64,6 @@ func main() {
 		log.Println(err)
 		os.Exit(23)
 	}
-	log.Println(accounts.Values)
 
 	for _, a := range accounts.Values {
 		log.Println("============")
