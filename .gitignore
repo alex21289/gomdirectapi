@@ -3,3 +3,5 @@ main.go
 #go.mod
 go.sum
 .env
+
+/.idea

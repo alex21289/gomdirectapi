@@ -1,17 +1,3 @@
-# Go Comdirect API
-
-This will be a simple Go wrapper for the private comdirect API.
-
-The package will provide
-
-- Authentication
-- Read transactions and balances
-
-## Example Authentication
-
-### main.go
-
-```go
 package main
 
 import (
@@ -22,14 +8,13 @@ import (
 	"time"
 
 	"github.com/alex21289/gomdirectapi"
-	"github.com/alex21289/gomdirectapi/account"
 	"github.com/spf13/viper"
 )
 
 func main() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
-	viper.AddConfigPath("<path-to-credentials>")
+	viper.AddConfigPath("F:\\workspace\\github.com\\gomdirectapi\\examples")
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal(err)
 	}
@@ -42,10 +27,9 @@ func main() {
 		AccessToken:  viper.GetString("access_token"),
 	}
 
-	// Create a new session instance
 	session := gomdirectapi.NewBuilder(creds).Build()
 
-	// Authentication flow step by step
+	// Get Session
 	if err := session.Authenticate(); err != nil {
 		log.Fatal(err)
 	}
@@ -54,39 +38,45 @@ func main() {
 	}
 	err := session.Validate()
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Validierungsfehler")
+		log.Println(err)
+		os.Exit(1)
 	}
-	// Confirm session with mobile device
-	confirmSession()
-
-	if err := session.Activate(); err != nil {
-		log.Fatal(err)
-	}
-if 	err := session.OAuth2(); err != nil {
-	log.Fatal(err)
-}
-
-// Get Client from session
-client, err := gomdirectapi.GetClient(session)
+	time.Sleep(time.Second * 10)
+	// confirmSession()
+	err = session.Activate()
 	if err != nil {
 		log.Fatal(err)
 	}
+	err = session.OAuth2()
+	if err != nil {
+		log.Println(err)
+		os.Exit(21)
+	}
+	client, err := gomdirectapi.GetClient(session)
+	if err != nil {
+		log.Println(err)
+		os.Exit(22)
+	}
 
-
-// Create an instance to query accounts
-	accounts, err := account.GetAccounts(client)
+	accounts, err := client.GetAccounts()
 	if err != nil {
 		log.Println(err)
 		os.Exit(23)
 	}
 	log.Println(accounts.Values)
 
+	for _, a := range accounts.Values {
+		log.Println("============")
+		log.Println(a.AccountDetail.AccountType.Text)
+		log.Println(a.Balance.Value + " €")
+	}
+
 }
 
 func confirmSession() {
-	fmt.Print("Press Enter after you confirmed the Session on your Mobile Device... ")
+	fmt.Print("Press Enter after confirm the Session on your Mobile Device")
 	input := bufio.NewScanner(os.Stdin)
 	input.Scan()
+	fmt.Println(input.Text())
 }
-
-```
