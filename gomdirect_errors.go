@@ -16,7 +16,15 @@ type sessionError struct {
 
 type validationError struct {
 	Code     string              `json:"code"`
-	Messages []map[string]string `json:"messages"`
+	Messages []validationMessage `json:"messages"`
+}
+
+type validationMessage struct {
+	Serverity string            `json:"serverity"`
+	Key       string            `json:"key"`
+	Message   string            `json:"message"`
+	Args      map[string]string `json:"args"`
+	Origin    []string          `json:"origin"`
 }
 
 type comError struct {
@@ -43,15 +51,18 @@ func handleErr(response mcore.Response, err error) error {
 	}
 	if response.StatusCode >= 400 {
 		var restErr sessionError
+		var validationErr validationError
 		var errMsg string
 		if err := response.UnmarshalJson(&restErr); err != nil {
 			errMsg = fmt.Sprintf("%d %s: %s", response.StatusCode, http.StatusText(response.StatusCode), response.String())
-		}
-		if restErr.Error != "" {
+		} else if restErr.Error != "" {
 			errMsg = fmt.Sprintf("%d %s: %s - %s", response.StatusCode, http.StatusText(response.StatusCode), restErr.Error, restErr.ErrorDescription)
-		}
-		if restErr.Summary != "" {
+		} else if restErr.Summary != "" {
 			errMsg = fmt.Sprintf("%d %s: %s", response.StatusCode, http.StatusText(response.StatusCode), restErr.Summary)
+		} else if err := response.UnmarshalJson(&validationErr); err == nil {
+			errMsg = fmt.Sprintf("%d %s: %s - %s", response.StatusCode, http.StatusText(response.StatusCode), validationErr.Code, validationErr.Messages[0].Message)
+		} else {
+			errMsg = fmt.Sprintf("%d %s: %s", response.StatusCode, http.StatusText(response.StatusCode), response.String())
 		}
 		return errors.New(errMsg)
 	}
