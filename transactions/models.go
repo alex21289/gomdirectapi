@@ -26,13 +26,9 @@ type Transaction struct {
 		Value string `json:"value"`
 		Unit  string `json:"unit"`
 	} `json:"amount"`
-	Remitter struct {
-		HolderName string `json:"holderName"`
-		Iban       string `json:"iban"`
-		Bic        string `json:"bic"`
-	} `json:"remitter"`
-	Deptor                interface{} `json:"deptor"`
-	Creditor              interface{} `json:"creditor"`
+	Remitter              Holder      `json:"remitter"`
+	Deptor                Holder      `json:"deptor"`
+	Creditor              Holder      `json:"creditor"`
 	ValutaDate            string      `json:"valutaDate"`
 	DirectDebitCreditorID interface{} `json:"directDebitCreditorId"`
 	DirectDebitMandateID  interface{} `json:"directDebitMandateId"`
@@ -43,4 +39,10 @@ type Transaction struct {
 		Key  string `json:"key"`
 		Text string `json:"text"`
 	} `json:"transactionType"`
+}
+
+type Holder struct {
+	HolderName string `json:"holderName"`
+	Iban       string `json:"iban"`
+	Bic        string `json:"bic"`
 }
