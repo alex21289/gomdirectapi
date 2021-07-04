@@ -1,7 +1,5 @@
 package transactions
 
-// TODO: replace type interface{}
-
 type TransactionAPIResponse struct {
 	Paging struct {
 		Index   int `json:"index"`
