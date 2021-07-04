@@ -10,10 +10,10 @@ import (
 
 type Client struct {
 	http    merkur.Client
-	session *comdirectSession
+	session *ComdirectSession
 }
 
-func GetClient(s *comdirectSession) (Client, error) {
+func GetClient(s *ComdirectSession) (Client, error) {
 
 	requestInfo := fmt.Sprintf("{\"clientRequestId\":{\"sessionId\":\"%s\",\"requestId\":\"%s\"}}", s.Session.SessionID, s.Session.RequestID)
 

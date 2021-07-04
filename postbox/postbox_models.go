@@ -14,7 +14,7 @@ type Documentmetadata struct {
 	Predocumentexists bool `json:"predocumentExists"`
 }
 type Document struct {
-	Documentid       string           `json:"documentId"`
+	DocumentID       string           `json:"documentId"`
 	Name             string           `json:"name"`
 	Datecreation     string           `json:"dateCreation"`
 	Mimetype         string           `json:"mimeType"`

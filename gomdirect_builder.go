@@ -16,9 +16,9 @@ type ClientCredentials struct {
 	AccessToken  string `json:"access_token"`
 }
 
-func NewSession(credentials ClientCredentials) *comdirectSession {
+func NewSession(credentials ClientCredentials) *ComdirectSession {
 	httpClient := merkur.NewBuilder().Build()
-	return &comdirectSession{
+	return &ComdirectSession{
 		httpClient:  httpClient,
 		Credentials: credentials,
 		Session: auth.Session{
@@ -29,7 +29,7 @@ func NewSession(credentials ClientCredentials) *comdirectSession {
 
 }
 
-func GetSessionFromJson(path string) (*comdirectSession, error) {
+func GetSessionFromJson(path string) (*ComdirectSession, error) {
 	httpClient := merkur.NewBuilder().Build()
 	var session auth.Session
 
@@ -42,7 +42,7 @@ func GetSessionFromJson(path string) (*comdirectSession, error) {
 		return nil, err
 	}
 
-	cs := comdirectSession{
+	cs := ComdirectSession{
 		httpClient: httpClient,
 		Session:    session,
 	}

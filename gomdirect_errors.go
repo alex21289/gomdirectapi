@@ -27,23 +27,6 @@ type validationMessage struct {
 	Origin    []string          `json:"origin"`
 }
 
-type comError struct {
-	Status     string
-	StatusCode int
-	Error      string
-	Message    string
-}
-
-// Obsolet
-func newComRestError(statusCode int, err sessionError) *comError {
-	return &comError{
-		Status:     http.StatusText(statusCode),
-		StatusCode: statusCode,
-		Error:      err.Error,
-		Message:    err.ErrorDescription,
-	}
-}
-
 // Handles error and  response error
 func handleErr(response mcore.Response, err error) error {
 	if err != nil {
@@ -61,6 +44,8 @@ func handleErr(response mcore.Response, err error) error {
 			errMsg = fmt.Sprintf("%d %s: %s", response.StatusCode, http.StatusText(response.StatusCode), restErr.Summary)
 		} else if err := response.UnmarshalJson(&validationErr); err == nil {
 			errMsg = fmt.Sprintf("%d %s: %s - %s", response.StatusCode, http.StatusText(response.StatusCode), validationErr.Code, validationErr.Messages[0].Message)
+		} else if response.Headers.Get("Content-Type") == "text/html;utf-8" {
+			errMsg = fmt.Sprintf("%d %s", response.StatusCode, http.StatusText(response.StatusCode))
 		} else {
 			errMsg = fmt.Sprintf("%d %s: %s", response.StatusCode, http.StatusText(response.StatusCode), response.String())
 		}

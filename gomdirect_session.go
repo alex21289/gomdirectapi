@@ -15,7 +15,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type comdirectSession struct {
+type ComdirectSession struct {
 	Credentials ClientCredentials
 	httpClient  merkur.Client
 
@@ -34,7 +34,7 @@ type Session interface {
 	Refresh() error
 }
 
-func (cs *comdirectSession) Authenticate() error {
+func (cs *ComdirectSession) Authenticate() error {
 
 	payload := "client_id=" + cs.Credentials.ClientID +
 		"&client_secret=" + cs.Credentials.ClientSecret +
@@ -57,7 +57,7 @@ func (cs *comdirectSession) Authenticate() error {
 	return nil
 }
 
-func (cs *comdirectSession) GetSession() error {
+func (cs *ComdirectSession) GetSession() error {
 	now := time.Now().Format("20060201150405")
 	cs.Session.SessionID = uuid.New()
 	cs.Session.RequestID = now[len(now)-9 : len(now)]
@@ -101,7 +101,7 @@ func (cs *comdirectSession) GetSession() error {
 	return nil
 }
 
-func (cs *comdirectSession) Validate() error {
+func (cs *ComdirectSession) Validate() error {
 	url := fmt.Sprintf(ValidateURL, cs.Session.SessionUUID)
 
 	headers := make(http.Header)
@@ -135,7 +135,7 @@ func (cs *comdirectSession) Validate() error {
 	return nil
 }
 
-func (cs *comdirectSession) Activate() error {
+func (cs *ComdirectSession) Activate() error {
 
 	url := fmt.Sprintf(ActivateURL, cs.Session.SessionUUID)
 
@@ -161,7 +161,7 @@ func (cs *comdirectSession) Activate() error {
 	return nil
 }
 
-func (cs *comdirectSession) OAuth2() error {
+func (cs *ComdirectSession) OAuth2() error {
 
 	payloadString := fmt.Sprintf("client_id=%s&client_secret=%s&grant_type=cd_secondary&token=%s", cs.Credentials.ClientID, cs.Credentials.ClientSecret, cs.Session.AccessToken)
 	headers := make(http.Header)
@@ -185,7 +185,7 @@ func (cs *comdirectSession) OAuth2() error {
 	return nil
 }
 
-func (cs *comdirectSession) Refresh() error {
+func (cs *ComdirectSession) Refresh() error {
 	url := "https://api.comdirect.de/oauth/token"
 
 	payloadString := fmt.Sprintf("client_id=%s&client_secret=%s&grant_type=refresh_token&refresh_token=%s", cs.Session.ClientID, cs.Session.ClientSecret, cs.Session.RefreshToken)
@@ -214,7 +214,7 @@ func (cs *comdirectSession) Refresh() error {
 	return nil
 }
 
-func (cs *comdirectSession) Revoke() error {
+func (cs *ComdirectSession) Revoke() error {
 	headers := make(http.Header)
 	qSession := fmt.Sprintf("qSession=%s", cs.Session.QSession)
 	headers.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -229,7 +229,7 @@ func (cs *comdirectSession) Revoke() error {
 	return nil
 }
 
-func (cs *comdirectSession) SaveToJson(path string) error {
+func (cs *ComdirectSession) SaveToJson(path string) error {
 
 	fileName := "session.json"
 	filePath := filepath.Join(path, fileName)
