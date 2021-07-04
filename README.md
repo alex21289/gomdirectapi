@@ -1,11 +1,15 @@
-# Go Comdirect API
+# Go Comdirect API (WIP)
 
-This will be a simple Go wrapper for the private comdirect API.
+This is a simple Go wrapper for the private comdirect API.
 
 The package will provide
 
 - Authentication
-- Read transactions and balances
+- Refreshing session
+- Read account transactions and balances
+- Read depot and transactions
+- Read reports
+- Read and download documents from postbox
 
 ## Example Authentication
 
