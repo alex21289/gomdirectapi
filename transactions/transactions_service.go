@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 func (b *Bookings) GetByRemittanceInfo(remittanceInfo string) (*Bookings, error) {
@@ -11,10 +12,10 @@ func (b *Bookings) GetByRemittanceInfo(remittanceInfo string) (*Bookings, error)
 	var fb []Booking
 	var amount float64 = 0
 	var debiting float64 = 0
-	exp := regexp.MustCompile(remittanceInfo)
+	exp := regexp.MustCompile(strings.ToLower(remittanceInfo))
 
 	for _, sb := range b.Values {
-		if match := exp.MatchString(sb.RemittanceInfo); match {
+		if match := exp.MatchString(strings.ToLower(sb.RemittanceInfo)); match {
 			fb = append(fb, sb)
 			val, err := strconv.ParseFloat(sb.Amount.Value, 64)
 			if err != nil {
