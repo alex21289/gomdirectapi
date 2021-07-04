@@ -11,6 +11,7 @@ import (
 
 	"github.com/alex21289/gomdirectapi/auth"
 	"github.com/alex21289/merkur"
+	"github.com/alex21289/merkur/formdata"
 	"github.com/alex21289/merkur/mmime"
 	"github.com/google/uuid"
 )
@@ -36,10 +37,12 @@ type Session interface {
 
 func (cs *ComdirectSession) Authenticate() error {
 
-	payload := "client_id=" + cs.Credentials.ClientID +
-		"&client_secret=" + cs.Credentials.ClientSecret +
-		"&grant_type=password&username=" + cs.Credentials.Username +
-		"&password=" + cs.Credentials.Password
+	payload := formdata.NewFormData()
+	payload.Set("client_id", cs.Credentials.ClientID)
+	payload.Set("client_secret", cs.Credentials.ClientSecret)
+	payload.Set("grant_type", "password")
+	payload.Set("username", cs.Credentials.Username)
+	payload.Set("password", cs.Credentials.Password)
 
 	headers := make(http.Header)
 	headers.Set(mmime.HeaderContentType, mmime.ContentTypeXFormUrlencoded)
@@ -163,14 +166,19 @@ func (cs *ComdirectSession) Activate() error {
 
 func (cs *ComdirectSession) OAuth2() error {
 
-	payloadString := fmt.Sprintf("client_id=%s&client_secret=%s&grant_type=cd_secondary&token=%s", cs.Credentials.ClientID, cs.Credentials.ClientSecret, cs.Session.AccessToken)
+	payload := formdata.NewFormData()
+	payload.Set("client_id", cs.Credentials.ClientID)
+	payload.Set("client_secret", cs.Credentials.ClientSecret)
+	payload.Set("grant_type", "cd_secondary")
+	payload.Set("token", cs.Session.AccessToken)
+
 	headers := make(http.Header)
 	qSession := fmt.Sprintf("qSession=%s", cs.Session.QSession)
 	headers.Set("Content-Type", "application/x-www-form-urlencoded")
 	headers.Set("Accept", "application/json")
 	headers.Set("Cookie", qSession)
 
-	response, err := cs.httpClient.Post(OAuth2URL, payloadString, headers)
+	response, err := cs.httpClient.Post(OAuth2URL, payload, headers)
 	if err := handleErr(*response, err); err != nil {
 		return err
 	}
@@ -188,7 +196,11 @@ func (cs *ComdirectSession) OAuth2() error {
 func (cs *ComdirectSession) Refresh() error {
 	url := "https://api.comdirect.de/oauth/token"
 
-	payloadString := fmt.Sprintf("client_id=%s&client_secret=%s&grant_type=refresh_token&refresh_token=%s", cs.Session.ClientID, cs.Session.ClientSecret, cs.Session.RefreshToken)
+	payload := formdata.NewFormData()
+	payload.Set("client_id", cs.Credentials.ClientID)
+	payload.Set("client_secret", cs.Credentials.ClientSecret)
+	payload.Set("grant_type", "refresh_token")
+	payload.Set("refresh_token", cs.Session.RefreshToken)
 
 	qSession := fmt.Sprintf("qSession=%s", cs.Session.QSession)
 
@@ -197,7 +209,7 @@ func (cs *ComdirectSession) Refresh() error {
 	headers.Set("Accept", "application/json")
 	headers.Set("Cookie", qSession)
 
-	response, err := cs.httpClient.Post(url, payloadString, headers)
+	response, err := cs.httpClient.Post(url, payload, headers)
 	if err := handleErr(*response, err); err != nil {
 		return err
 	}
