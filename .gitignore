@@ -3,5 +3,6 @@ main.go
 #go.mod
 go.sum
 .env
+./temp
 
 /.idea
