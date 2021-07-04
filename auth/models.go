@@ -36,7 +36,7 @@ type Client struct {
 	ExpiresIn        int64     `json:"expires_in"`
 	Scope            string    `json:"scope"`
 	SessionUUID      string    `json:"session_uuid"`
-	RequestID        string    `json:"request:id"`
+	RequestID        string    `json:"request_id"`
 	SessionID        uuid.UUID `json:"session_id"`
 	QSession         string    `json:"qSession"`
 	Tan              string    `json:"tan"`

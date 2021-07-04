@@ -8,26 +8,28 @@ import (
 )
 
 type Client struct {
-	http merkur.Client
+	http    merkur.Client
+	Session *comdirectSession
 }
 
-func GetClient(session *comdirectSession) (*Client, error) {
+func GetClient(s *comdirectSession) (Client, error) {
 
-	requestInfo := fmt.Sprintf("{\"clientRequestId\":{\"sessionId\":\"%s\",\"requestId\":\"%s\"}}", session.AuthClient.SessionID, session.AuthClient.RequestID)
+	requestInfo := fmt.Sprintf("{\"clientRequestId\":{\"sessionId\":\"%s\",\"requestId\":\"%s\"}}", s.AuthClient.SessionID, s.AuthClient.RequestID)
 
 	headers := make(http.Header)
 	headers.Set("Accept", "application/json")
-	headers.Set("Authorization", "Bearer "+session.Authentication.AccessToken)
+	headers.Set("Authorization", "Bearer "+s.AuthClient.AccessToken)
 	headers.Set("x-http-request-info", requestInfo)
 	headers.Set("Content-Type", "application/json")
-	headers.Set("Cookie", "qSession="+session.AuthClient.QSession)
+	headers.Set("Cookie", "qSession="+s.AuthClient.QSession)
 
 	clientBuilder := merkur.NewBuilder()
 	httpClient := clientBuilder.SetHeaders(headers).Build()
 
 	client := Client{
-		http: httpClient,
+		http:    httpClient,
+		Session: s,
 	}
 
-	return &client, nil
+	return client, nil
 }

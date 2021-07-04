@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/alex21289/gomdirectapi"
 	"github.com/spf13/viper"
@@ -18,6 +17,7 @@ func main() {
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal(err)
 	}
+	log.Println(viper.GetString("client_id"))
 
 	creds := gomdirectapi.ClientCredentials{
 		ClientID:     viper.GetString("client_id"),
@@ -42,8 +42,8 @@ func main() {
 		log.Println(err)
 		os.Exit(1)
 	}
-	time.Sleep(time.Second * 10)
-	// confirmSession()
+	// time.Sleep(time.Second * 10)
+	confirmSession()
 	err = session.Activate()
 	if err != nil {
 		log.Fatal(err)
@@ -70,6 +70,8 @@ func main() {
 		log.Println(a.AccountDetail.AccountType.Text)
 		log.Println(a.Balance.Value + " €")
 	}
+
+	session.SaveToJson(".\\")
 
 }
 

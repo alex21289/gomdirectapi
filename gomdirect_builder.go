@@ -1,6 +1,12 @@
 package gomdirectapi
 
-import "github.com/alex21289/merkur"
+import (
+	"encoding/json"
+	"io/ioutil"
+
+	"github.com/alex21289/gomdirectapi/auth"
+	"github.com/alex21289/merkur"
+)
 
 type ClientCredentials struct {
 	ClientID     string `json:"client_id"`
@@ -30,6 +36,30 @@ func (sb *sessionBuilder) Build() *comdirectSession {
 	session := comdirectSession{
 		builder:    sb,
 		httpClient: httpClient,
+		AuthClient: auth.Client{
+			ClientID:     sb.credentials.ClientID,
+			ClientSecret: sb.credentials.ClientSecret,
+		},
 	}
 	return &session
+}
+
+func GetSessionFormJson(path string) (*comdirectSession, error) {
+	httpClient := merkur.NewBuilder().Build()
+	var session auth.Client
+
+	file, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(file, &session)
+	if err != nil {
+		return nil, err
+	}
+
+	cs := comdirectSession{
+		httpClient: httpClient,
+		AuthClient: session,
+	}
+	return &cs, nil
 }

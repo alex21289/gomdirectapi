@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"path/filepath"
 	"time"
 
 	"github.com/alex21289/gomdirectapi/auth"
@@ -103,7 +105,10 @@ func (cs *comdirectSession) GetSession() error {
 	}
 
 	cs.AuthClient.SessionUUID = sessions[0].Identifier
+	cs.AuthClient.Identifier = sessions[0].Identifier
 	cs.SessionStatus.Identifier = sessions[0].Identifier
+	cs.AuthClient.SessionTanActive = true
+	cs.AuthClient.SessionTanActive = true
 	cs.SessionStatus.Activated2FA = true
 	cs.SessionStatus.SessionTanActive = true
 
@@ -195,11 +200,71 @@ func (cs *comdirectSession) OAuth2() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Authentication sucess")
+	cs.AuthClient.AccessToken = cs.Authentication.AccessToken
+	cs.AuthClient.RefreshToken = cs.Authentication.RefreshToken
+
+	// cs.AuthClient.ClientID = cs.builder.credentials.ClientID
+	// cs.AuthClient.ClientSecret = cs.builder.credentials.ClientSecret
 
 	return nil
 }
-func (cs *comdirectSession) Refresh() error {
 
+func (cs *comdirectSession) Refresh() error {
+	url := "https://api.comdirect.de/oauth/token"
+
+	payloadString := fmt.Sprintf("client_id=%s&client_secret=%s&grant_type=refresh_token&refresh_token=%s", cs.AuthClient.ClientID, cs.AuthClient.ClientSecret, cs.AuthClient.RefreshToken)
+
+	qSession := fmt.Sprintf("qSession=%s", cs.AuthClient.QSession)
+
+	headers := make(http.Header)
+	headers.Set("Content-Type", "application/x-www-form-urlencoded")
+	headers.Set("Accept", "application/json")
+	headers.Set("Cookie", qSession)
+
+	response, err := cs.httpClient.Post(url, payloadString, headers)
+	if err != nil {
+		return err
+	}
+	if response.StatusCode >= 400 {
+		return errors.New(response.String() + " Status: " + response.Status)
+	}
+	err = response.UnmarshalJson(&cs.RefreshSession)
+	if err != nil {
+		return err
+	}
+
+	cs.AuthClient.AccessToken = cs.RefreshSession.AccessToken
+	cs.AuthClient.RefreshToken = cs.RefreshSession.RefreshToken
+	cs.AuthClient.ExpiresIn = time.Now().UTC().Add(time.Duration(cs.RefreshSession.ExpiresIn) * time.Second).Unix()
+
+	return nil
+}
+
+func (cs *comdirectSession) Revoke() error {
+	headers := make(http.Header)
+	qSession := fmt.Sprintf("qSession=%s", cs.AuthClient.QSession)
+	headers.Set("Content-Type", "application/x-www-form-urlencoded")
+	headers.Set("Accept", "application/json")
+	headers.Set("Cookie", qSession)
+
+	result, err := cs.httpClient.Delete(RevokeURL, headers)
+	if err != nil {
+		return err
+	}
+	if result.StatusCode >= 400 {
+		return errors.New(result.String())
+	}
+	return nil
+}
+
+func (cs *comdirectSession) SaveToJson(path string) error {
+
+	fileName := "session.json"
+	filePath := filepath.Join(path, fileName)
+	session, err := json.MarshalIndent(cs.AuthClient, "", "  ")
+	if err != nil {
+		return err
+	}
+	ioutil.WriteFile(filePath, session, 0644)
 	return nil
 }
