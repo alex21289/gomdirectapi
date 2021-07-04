@@ -1,12 +1,20 @@
 package gomdirectapi
 
 const (
-	TokenURL   string = "https://api.comdirect.de/oauth/token"
-	SessionURL string = "https://api.comdirect.de/api/session/clients/user/v1/sessions"
-	// ValidateURL
-	// Must use with fmt.Sprintf to pass the sessionUUID
-	ValidateURL string = "https://api.comdirect.de/api/session/clients/user/v1/sessions/%s/validate"
-	ActivateURL string = "https://api.comdirect.de/api/session/clients/user/v1/sessions/%s"
-	OAuth2URL   string = "https://api.comdirect.de/oauth/token"
-	RevokeURL   string = "https://api.comdirect.de/oauth/revoke"
+	BaseURL    string = "https://api.comdirect.de/"
+	TokenURL   string = BaseURL + "oauth/token"
+	SessionURL string = BaseURL + "api/session/clients/user/v1/sessions"
+
+	// ValidateURL use with fmt.Sprintf to pass the sessionUUID
+	ValidateURL string = BaseURL + "api/session/clients/user/v1/sessions/%s/validate"
+
+	// ActivateURL use with fmt.Sprintf to pass the sessionUUID
+	ActivateURL string = BaseURL + "api/session/clients/user/v1/sessions/%s"
+	OAuth2URL   string = BaseURL + "oauth/token"
+	RevokeURL   string = BaseURL + "oauth/revoke"
+)
+
+// Depot
+const (
+	DepotURL string = BaseURL + "/brokerage/clients/user/v3/depots"
 )
