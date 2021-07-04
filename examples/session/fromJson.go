@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	session, err := gomdirectapi.GetSessionFormJson("..\\session.json")
+	session, err := gomdirectapi.GetSessionFromJson("..\\session.json")
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)

@@ -8,6 +8,7 @@ import (
 	"github.com/alex21289/gomdirectapi/transactions"
 )
 
+// GetAccounts returns all accounts
 func (c *Client) GetAccounts() (*account.AccountAPIResponse, error) {
 	AccountURL := "https://api.comdirect.de/api/banking/clients/user/v2/accounts/balances"
 	response, err := c.http.Get(AccountURL)
@@ -23,9 +24,10 @@ func (c *Client) GetAccounts() (*account.AccountAPIResponse, error) {
 	return &accounts, nil
 }
 
-func (c *Client) GetAccountByUUID(uuid string) (*account.Account, error) {
+// GetAccountByID returns the details of the given Account
+func (c *Client) GetAccountByID(accountID string) (*account.Account, error) {
 	var SingleAccountURL = "https://api.comdirect.de/api/banking/v2/accounts/%s/balances"
-	url := fmt.Sprintf(SingleAccountURL, uuid)
+	url := fmt.Sprintf(SingleAccountURL, accountID)
 	response, err := c.http.Get(url)
 	if err != nil {
 		return nil, err
@@ -40,10 +42,11 @@ func (c *Client) GetAccountByUUID(uuid string) (*account.Account, error) {
 	return &account, nil
 }
 
-func (c *Client) GetTransactions(accountUUID string) (*transactions.TransactionAPIResponse, error) {
+// GetTransactions returns the transactions of the given AccountID
+func (c *Client) GetTransactions(accountID string) (*transactions.TransactionAPIResponse, error) {
 	var TransactionURL = "https://api.comdirect.de/api/banking/v1/accounts/%s/transactions"
 
-	url := fmt.Sprintf(TransactionURL, accountUUID)
+	url := fmt.Sprintf(TransactionURL, accountID)
 
 	response, err := c.http.Get(url)
 	if err != nil {

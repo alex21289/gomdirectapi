@@ -27,7 +27,7 @@ func main() {
 		AccessToken:  viper.GetString("access_token"),
 	}
 
-	session := gomdirectapi.NewBuilder(creds).Build()
+	session := gomdirectapi.NewSession(creds)
 
 	// Get Session
 	if err := session.Authenticate(); err != nil {

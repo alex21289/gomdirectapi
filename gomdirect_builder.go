@@ -16,37 +16,22 @@ type ClientCredentials struct {
 	AccessToken  string `json:"access_token"`
 }
 
-type sessionBuilder struct {
-	credentials ClientCredentials
-}
-
-type SessionBuilder interface {
-	Build() *comdirectSession
-}
-
-func NewBuilder(credentials ClientCredentials) SessionBuilder {
-	builder := &sessionBuilder{
-		credentials: credentials,
-	}
-	return builder
-}
-
-func (sb *sessionBuilder) Build() *comdirectSession {
+func NewSession(credentials ClientCredentials) *comdirectSession {
 	httpClient := merkur.NewBuilder().Build()
-	session := comdirectSession{
-		builder:    sb,
-		httpClient: httpClient,
-		AuthClient: auth.Client{
-			ClientID:     sb.credentials.ClientID,
-			ClientSecret: sb.credentials.ClientSecret,
+	return &comdirectSession{
+		httpClient:  httpClient,
+		Credentials: credentials,
+		Session: auth.Session{
+			ClientID:     credentials.ClientID,
+			ClientSecret: credentials.ClientSecret,
 		},
 	}
-	return &session
+
 }
 
-func GetSessionFormJson(path string) (*comdirectSession, error) {
+func GetSessionFromJson(path string) (*comdirectSession, error) {
 	httpClient := merkur.NewBuilder().Build()
-	var session auth.Client
+	var session auth.Session
 
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -59,7 +44,7 @@ func GetSessionFormJson(path string) (*comdirectSession, error) {
 
 	cs := comdirectSession{
 		httpClient: httpClient,
-		AuthClient: session,
+		Session:    session,
 	}
 	return &cs, nil
 }
