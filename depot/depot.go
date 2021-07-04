@@ -2,13 +2,13 @@ package depot
 
 type DepotApiResponse struct {
 	Paging Paging  `json:"paging"`
-	Values []Depot `json:"values"`
+	Depots []Depot `json:"values"`
 }
 
 type DepotPortfolioApiResponse struct {
 	Paging     Paging     `json:"paging"`
 	Aggregated Aggregated `json:"aggregated"`
-	Stocks     []Stock    `json:"values"`
+	Positions  []Position `json:"values"`
 }
 
 type Depot struct {
@@ -84,7 +84,7 @@ type Availablequantitytohedge struct {
 	Value string `json:"value"`
 	Unit  string `json:"unit"`
 }
-type Stock struct {
+type Position struct {
 	Depotid                  string                   `json:"depotId"`
 	Positionid               string                   `json:"positionId"`
 	Wkn                      string                   `json:"wkn"`
